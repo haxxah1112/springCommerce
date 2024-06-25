@@ -1,1 +1,6 @@
 rootProject.name = 'shop'
+include 'user-module'
+include 'order-module'
+include 'domain-module'
+include 'product-module'
+
