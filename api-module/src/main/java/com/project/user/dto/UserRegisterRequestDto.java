@@ -1,4 +1,4 @@
-package com.project.dto;
+package com.project.user.dto;
 
 import com.project.domain.Users.UserRole;
 import jakarta.validation.constraints.NotEmpty;

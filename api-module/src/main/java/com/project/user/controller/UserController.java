@@ -1,9 +1,10 @@
-package com.project.controller;
+package com.project.user.controller;
 
-import com.project.domain.Users.Users;
-import com.project.dto.UserRegisterRequestDto;
-import com.project.dto.UserRegisterResponseDto;
-import com.project.service.UserService;
+import com.project.user.dto.UserLoginRequestDto;
+import com.project.user.dto.UserRegisterRequestDto;
+import com.project.user.dto.UserRegisterResponseDto;
+import com.project.user.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
     @PostMapping("/register")
-    public ResponseEntity<UserRegisterResponseDto> signUpUser(@Valid @RequestBody UserRegisterRequestDto signUpRequest) {
-        UserRegisterResponseDto signUpResponse = userService.registerUser(signUpRequest);
-        return ResponseEntity.ok(signUpResponse);
+    public ResponseEntity<UserRegisterResponseDto> signUpUser(@Valid @RequestBody UserRegisterRequestDto registerRequest) {
+        UserRegisterResponseDto registerResponse = userService.registerUser(registerRequest);
+        return ResponseEntity.ok(registerResponse);
     }
 }
