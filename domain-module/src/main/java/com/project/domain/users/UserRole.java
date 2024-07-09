@@ -1,4 +1,4 @@
-package com.project.domain.Users;
+package com.project.domain.users;
 
 public enum UserRole {
     BUYER,

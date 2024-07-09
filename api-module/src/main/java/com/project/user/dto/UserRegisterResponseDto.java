@@ -1,6 +1,6 @@
 package com.project.user.dto;
 
-import com.project.domain.Users.UserRole;
+import com.project.domain.users.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

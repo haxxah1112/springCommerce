@@ -1,4 +1,4 @@
-package com.project.domain.Users;
+package com.project.domain.users;
 
 import com.project.domain.BaseEntity;
 import jakarta.persistence.*;

@@ -1,5 +1,6 @@
 package com.project.domain;
 
+import com.project.domain.brands.Brands;
 import jakarta.persistence.*;
 
 @Entity

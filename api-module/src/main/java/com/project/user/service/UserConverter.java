@@ -1,7 +1,7 @@
 package com.project.user.service;
 
-import com.project.domain.Users.UserRole;
-import com.project.domain.Users.Users;
+import com.project.domain.users.UserRole;
+import com.project.domain.users.Users;
 import com.project.user.dto.UserRegisterRequestDto;
 import com.project.user.dto.UserRegisterResponseDto;
 import lombok.RequiredArgsConstructor;
