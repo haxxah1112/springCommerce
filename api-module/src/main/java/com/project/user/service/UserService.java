@@ -1,9 +1,14 @@
 package com.project.user.service;
 
+import com.project.common.ApiResponse;
+import com.project.user.dto.UserLoginRequestDto;
+import com.project.user.dto.UserLoginResponseDto;
 import com.project.user.dto.UserRegisterRequestDto;
 import com.project.user.dto.UserRegisterResponseDto;
 
 public interface UserService {
 
-    UserRegisterResponseDto registerUser(UserRegisterRequestDto signUpRequest);
+    ApiResponse<UserRegisterResponseDto> registerUser(UserRegisterRequestDto signUpRequest);
+
+    ApiResponse<UserLoginResponseDto> loginUser(UserLoginRequestDto loginRequest);
 }
