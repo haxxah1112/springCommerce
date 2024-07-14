@@ -2,5 +2,4 @@
 
 ## Database
 Table Diagram
-![shop](https://github.com/haxxah1112/springCommerce/assets/103932247/ab84bf33-5572-4567-9ebd-f3c5da3acb42)
-
+![shop (1)](https://github.com/user-attachments/assets/98391f72-6369-44cf-b815-d25c2ea31746)
