@@ -1,6 +1,8 @@
 package com.project.user.service;
 
 import com.project.common.ApiResponse;
+import com.project.common.exception.AuthenticationException;
+import com.project.common.exception.error.AuthenticationError;
 import com.project.domain.users.Users;
 import com.project.security.JwtPayload;
 import com.project.security.JwtProvider;
@@ -36,24 +38,24 @@ public class UserServiceImpl implements UserService {
     private void validateEmailNotDuplicate(String email) {
         boolean isPresent = userRepository.findByEmail(email).isPresent();
         if (isPresent) {
-            log.info("{} is already exist", email);
-            throw new RuntimeException("email is already exist");
+            throw new AuthenticationException(AuthenticationError.EMAIL_ALREADY_EXIST);
         }
     }
 
     @Override
     public ApiResponse<UserLoginResponseDto> loginUser(UserLoginRequestDto loginRequest) {
         Users findUser = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(
-                () -> new RuntimeException("request email is not found")
+                () -> new AuthenticationException(AuthenticationError.USER_NOT_FOUND)
         );
 
         Boolean isMatched = passwordEncoder.matches(loginRequest.getPassword(), findUser.getPassword());
         if (!isMatched) {
-            throw new RuntimeException("password is not valid with email");
+            throw new AuthenticationException(AuthenticationError.INVALID_PASSWORD);
         }
 
         JwtPayload jwtPayload = new JwtPayload(loginRequest.getEmail(), new Date());
         String token = jwtProvider.generateToken(jwtPayload);
+        jwtProvider.generateRefreshToken(jwtPayload);
 
         return ApiResponse.success(new UserLoginResponseDto(findUser.getName(), findUser.getEmail(), token));
     }
