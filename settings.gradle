@@ -1,4 +1,6 @@
 rootProject.name = 'shop'
 include 'domain-module'
 include 'api-module'
+include 'infra-module'
+include 'infra-module:redis'
 

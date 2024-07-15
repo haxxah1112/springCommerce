@@ -1,16 +1,15 @@
 package com.project.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtProvider {
@@ -21,9 +20,14 @@ public class JwtProvider {
     @Value("${service.jwt.email-key}")
     private String emailKey;
 
-    private final SecretKey secretKey;
+    @Value("${service.jwt.refresh-expiration}")
+    private Long refreshExpiration;
 
-    public JwtProvider(@Value("${service.jwt.secret-key}") String secretKey) {
+    private final SecretKey secretKey;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    public JwtProvider(@Value("${service.jwt.secret-key}") String secretKey, RedisTemplate<String, String> redisTemplate) {
+        this.redisTemplate = redisTemplate;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -36,5 +40,34 @@ public class JwtProvider {
                 .expiration(new Date(jwtPayload.issuedAt().getTime() + accessExpiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String generateRefreshToken(JwtPayload jwtPayload){
+        Claims claims = Jwts.claims().setSubject(jwtPayload.email()).build();
+        Date expireDate = new Date(jwtPayload.issuedAt().getTime() + refreshExpiration);
+
+        String refreshToken = Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(jwtPayload.issuedAt())
+                .setExpiration(expireDate)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+
+        redisTemplate.opsForValue().set(
+                jwtPayload.email(),
+                refreshToken,
+                refreshExpiration,
+                TimeUnit.MILLISECONDS
+        );
+
+        return refreshToken;
+    }
+
+    public JwtPayload verifyToken(String jwtToken) {
+
+        Jws<Claims> claimsJws = Jwts.parser().verifyWith(secretKey).build()
+                .parseSignedClaims(jwtToken);
+
+        return new JwtPayload(claimsJws.getPayload().get(emailKey, String.class), claimsJws.getPayload().getIssuedAt());
     }
 }
