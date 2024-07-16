@@ -28,6 +28,8 @@ dependencies {
     runtimeOnly "io.jsonwebtoken:jjwt-gson:${JJWT_VERSION}"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${JJWT_VERSION}"
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    implementation 'com.querydsl:querydsl-apt:5.0.0:jakarta'
 
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
