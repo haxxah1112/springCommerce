@@ -1,7 +1,12 @@
 package com.project.user.service;
 
+import com.project.common.ApiResponse;
 import com.project.domain.users.UserRole;
 import com.project.domain.users.Users;
+import com.project.security.JwtPayload;
+import com.project.security.JwtProvider;
+import com.project.user.dto.UserLoginRequestDto;
+import com.project.user.dto.UserLoginResponseDto;
 import com.project.user.dto.UserRegisterRequestDto;
 import com.project.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,8 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
-
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,10 +29,15 @@ class UserServiceImplTest {
     UserRepository userRepository;
     @Mock
     UserConverter userConverter;
+    @Mock
+    JwtProvider jwtProvider;
+    @Mock
+    PasswordEncoder passwordEncoder;
     @InjectMocks
     UserServiceImpl userService;
 
     UserRegisterRequestDto request;
+    UserLoginRequestDto loginRequest;
     @BeforeEach
     public void setUp() {
          request = UserRegisterRequestDto.builder()
@@ -35,6 +45,11 @@ class UserServiceImplTest {
                 .userEmail("test@naver.com")
                 .userPassword("password")
                 .userRole(UserRole.BUYER)
+                .build();
+
+        loginRequest = UserLoginRequestDto.builder()
+                .email("test@naver.com")
+                .password("password")
                 .build();
     }
 
@@ -64,4 +79,30 @@ class UserServiceImplTest {
         assertThat(savedUser.getUserRole()).isEqualTo(request.getUserRole());
     }
 
+    @Test
+    public void loginUserTest() {
+        //Given
+        Users user = Users.builder()
+                .name("test")
+                .email("test@naver.com")
+                .password("password")
+                .userRole(UserRole.BUYER)
+                .build();
+
+        String accessToken = "access-token";
+        String refreshToken = "refresh-token";
+
+        //When
+        when(userRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())).thenReturn(true);
+        when(jwtProvider.generateToken(any(JwtPayload.class))).thenReturn(accessToken);
+        when(jwtProvider.generateRefreshToken(any(JwtPayload.class))).thenReturn(refreshToken);
+
+        ApiResponse<UserLoginResponseDto> response = userService.loginUser(loginRequest);
+
+        //Then
+        assertThat(response.getData().getToken()).isEqualTo(accessToken);
+        assertThat(response.getData().getUserEmail()).isEqualTo(user.getEmail());
+        assertThat(response.getData().getUserName()).isEqualTo(user.getName());
+    }
 }
