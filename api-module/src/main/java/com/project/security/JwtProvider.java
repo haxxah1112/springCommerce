@@ -1,5 +1,7 @@
 package com.project.security;
 
+import com.project.common.exception.AuthenticationException;
+import com.project.common.exception.error.AuthenticationError;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -10,6 +12,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import static com.project.domain.users.UserRole.findUserRole;
 
 @Component
 public class JwtProvider {
@@ -35,7 +39,8 @@ public class JwtProvider {
     public String generateToken(JwtPayload jwtPayload) {
 
         return Jwts.builder()
-                .claim("email", jwtPayload)
+                .claim("email", jwtPayload.email())
+                .claim("userRole", jwtPayload.userRole())
                 .issuedAt(jwtPayload.issuedAt())
                 .expiration(new Date(jwtPayload.issuedAt().getTime() + accessExpiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -64,10 +69,15 @@ public class JwtProvider {
     }
 
     public JwtPayload verifyToken(String jwtToken) {
+        try {
+            Jws<Claims> claimsJws = Jwts.parser().verifyWith(secretKey).build()
+                    .parseSignedClaims(jwtToken);
 
-        Jws<Claims> claimsJws = Jwts.parser().verifyWith(secretKey).build()
-                .parseSignedClaims(jwtToken);
-
-        return new JwtPayload(claimsJws.getPayload().get(emailKey, String.class), claimsJws.getPayload().getIssuedAt());
+            return new JwtPayload(claimsJws.getPayload().get(emailKey, String.class),
+                    claimsJws.getPayload().getIssuedAt(),
+                    findUserRole(claimsJws.getPayload().get("userRole", String.class)));
+        } catch (JwtException e) {
+            throw new AuthenticationException(AuthenticationError.INVALID_TOKEN, e);
+        }
     }
 }

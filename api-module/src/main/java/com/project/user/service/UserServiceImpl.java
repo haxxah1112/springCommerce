@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
             throw new AuthenticationException(AuthenticationError.INVALID_PASSWORD);
         }
 
-        JwtPayload jwtPayload = new JwtPayload(loginRequest.getEmail(), new Date());
+        JwtPayload jwtPayload = new JwtPayload(loginRequest.getEmail(), new Date(), findUser.getUserRole());
         String token = jwtProvider.generateToken(jwtPayload);
         jwtProvider.generateRefreshToken(jwtPayload);
 
