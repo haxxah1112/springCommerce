@@ -3,8 +3,11 @@ package com.project.domain.products;
 import com.project.domain.BaseEntity;
 import com.project.domain.brands.Brands;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Entity
 @Table(name = "products")

@@ -1,4 +1,4 @@
-package com.project.repository;
+package com.project.domain.products.repository;
 
 import com.project.domain.products.Categories;
 import com.project.domain.products.Products;
