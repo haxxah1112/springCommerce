@@ -4,10 +4,12 @@ package com.project.common.dto;
 import com.project.common.enums.Condition;
 import com.project.domain.products.Categories;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public class SearchDto {

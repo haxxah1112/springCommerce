@@ -15,6 +15,7 @@ public class ProductConverter {
                 .price(product.getPrice())
                 .stockQuantity(product.getStockQuantity())
                 .discountRate(product.getDiscountRate())
+                .salesCount(product.getSalesCount())
                 .build();
     }
 }
