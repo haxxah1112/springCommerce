@@ -21,6 +21,6 @@ public class ProductResponseDto {
     private int stockQuantity;
 
     private double discountRate;
-    
+
     private int salesCount;
 }
