@@ -8,7 +8,7 @@ import com.project.security.JwtProvider;
 import com.project.user.dto.UserLoginRequestDto;
 import com.project.user.dto.UserLoginResponseDto;
 import com.project.user.dto.UserRegisterRequestDto;
-import com.project.repository.UserRepository;
+import com.project.domain.users.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

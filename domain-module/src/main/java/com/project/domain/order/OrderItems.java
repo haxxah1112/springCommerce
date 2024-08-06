@@ -1,7 +1,14 @@
-package com.project.domain;
+package com.project.domain.order;
 
+import com.project.domain.products.Products;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class OrderItems {
     @Id @GeneratedValue

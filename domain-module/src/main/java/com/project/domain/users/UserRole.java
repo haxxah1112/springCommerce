@@ -1,6 +1,11 @@
 package com.project.domain.users;
 
 public enum UserRole {
+    ALL,
     BUYER,
-    SELLER
+    SELLER;
+
+    public static UserRole findUserRole(String code) {
+        return UserRole.valueOf(code);
+    }
 }

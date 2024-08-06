@@ -4,7 +4,7 @@ import com.project.common.exception.AuthenticationException;
 import com.project.common.exception.error.AuthenticationError;
 import com.project.domain.users.UserRole;
 import com.project.domain.users.Users;
-import com.project.repository.UserRepository;
+import com.project.domain.users.repository.UserRepository;
 import com.project.user.dto.UserLoginRequestDto;
 import com.project.user.service.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;

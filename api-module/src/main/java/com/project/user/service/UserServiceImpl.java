@@ -10,7 +10,7 @@ import com.project.user.dto.UserLoginRequestDto;
 import com.project.user.dto.UserLoginResponseDto;
 import com.project.user.dto.UserRegisterRequestDto;
 import com.project.user.dto.UserRegisterResponseDto;
-import com.project.repository.UserRepository;
+import com.project.domain.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
