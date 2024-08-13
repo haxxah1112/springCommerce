@@ -13,6 +13,8 @@ import com.project.domain.users.Users;
 import com.project.domain.users.repository.UserRepository;
 import com.project.order.dto.OrderItemDto;
 import com.project.order.dto.OrderRequestDto;
+import com.project.order.manager.StockResultManager;
+import com.project.order.manager.StockResultContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final StockProducer stockProducer;
+    private final StockResultManager orderContextManager;
 
     @Override
     @Transactional
@@ -36,14 +39,20 @@ public class OrderServiceImpl implements OrderService {
         Orders order = orderConverter.convertRequestDtoToOrderEntity(request, user);
         order = orderRepository.save(order);
 
+        final Long orderId = order.getId();
+        StockResultContext context = new StockResultContext(request.getItems().size());
+        orderContextManager.addContext(orderId, context);
+
         for (OrderItemDto itemDto : request.getItems()) {
             Products product = productRepository.findById(itemDto.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
 
-            stockProducer.sendOrderEvent(new StockMessage(itemDto.getProductId(), itemDto.getQuantity()));
+            stockProducer.sendOrderEvent(new StockMessage(orderId, itemDto.getProductId(), itemDto.getQuantity()));
+
             OrderItems orderItem = orderConverter.convertOrderItemDtoToOrderItemEntity(itemDto, order, product);
             orderItemRepository.save(orderItem);
         }
+
         return ApiResponse.success(orderRepository.save(order));
     }
 }
