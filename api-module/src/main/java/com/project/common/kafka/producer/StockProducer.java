@@ -4,14 +4,17 @@ import com.project.common.Message;
 import com.project.common.kafka.message.StockMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.stereotype.Component;
 
-@Service
+import java.util.concurrent.CompletableFuture;
+
+@Component
 @RequiredArgsConstructor
 public class StockProducer {
     private final KafkaTemplate<String, Message> kafkaTemplate;
 
-    public void sendOrderEvent(StockMessage message) {
-        kafkaTemplate.send("stock-decrement", message);
+    public CompletableFuture<SendResult<String, Message>> sendOrderEvent(StockMessage message) {
+        return kafkaTemplate.send("stock-decrement", message);
     }
 }

@@ -9,14 +9,18 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class StockResultHandler {
-    private final StockResultManager orderContextManager;
+    private final StockResultManager stockResultManager;
     public void handle(StockResultMessage resultMessage) {
-        StockResultContext context = orderContextManager.getContext(resultMessage.getOrderId());
+        StockResultContext context = stockResultManager.getContext(resultMessage.getOrderId());
 
-        context.incrementProcessedCount();
+        context.incrementProcessedCount(resultMessage.isSuccess());
 
         if (context.isAllProcessed()) {
-            orderContextManager.removeContext(resultMessage.getOrderId());
+            if (!context.hasFailed()) {
+                // TODO: 주문처리
+            }
+            stockResultManager.removeContext(resultMessage.getOrderId());
         }
+
     }
 }

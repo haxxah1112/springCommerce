@@ -11,7 +11,10 @@ public class StockResultContext {
         this.totalItems = totalItems;
     }
 
-    public synchronized void incrementProcessedCount() {
+    public synchronized void incrementProcessedCount(boolean success) {
+        if (!success) {
+            setFailed();
+        }
         processedCount++;
     }
 
@@ -23,4 +26,7 @@ public class StockResultContext {
         return failed.get();
     }
 
+    public boolean setFailed() {
+        return failed.compareAndSet(false, true);
+    }
 }
