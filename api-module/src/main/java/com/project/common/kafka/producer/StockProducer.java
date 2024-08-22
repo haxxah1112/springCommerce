@@ -1,20 +1,25 @@
 package com.project.common.kafka.producer;
 
-import com.project.common.Message;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.common.kafka.message.StockMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.CompletableFuture;
 
 @Component
 @RequiredArgsConstructor
 public class StockProducer {
-    private final KafkaTemplate<String, Message> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
-    public CompletableFuture<SendResult<String, Message>> sendOrderEvent(StockMessage message) {
-        return kafkaTemplate.send("stock-decrement", message);
+    public void sendOrderEvent(StockMessage stockMessage) {
+        try {
+            String message = objectMapper.writeValueAsString(stockMessage);
+            kafkaTemplate.send("stock-decrement", String.valueOf(stockMessage.getOrderId()), message);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
+
 }
