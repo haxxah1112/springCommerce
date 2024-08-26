@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -40,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
         order = orderRepository.save(order);
 
         final Long orderId = order.getId();
-        StockResultContext context = new StockResultContext(request.getItems().size());
+        StockResultContext context = new StockResultContext(request.getItems().size(), request.getItems());
         orderContextManager.addContext(orderId, context);
 
         for (OrderItemDto itemDto : request.getItems()) {
@@ -54,5 +56,17 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return ApiResponse.success(orderRepository.save(order));
+    }
+
+    public void deleteOrder(Long orderId) {
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+
+        List<OrderItems> orderItems = orderItemRepository.findByOrderId(orderId);
+
+        if (!orderItems.isEmpty()) {
+            orderItemRepository.deleteAll(orderItems);
+        }
+
+        orderRepository.delete(order);
     }
 }

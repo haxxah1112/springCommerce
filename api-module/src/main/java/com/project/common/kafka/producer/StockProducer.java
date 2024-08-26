@@ -22,4 +22,8 @@ public class StockProducer {
         }
     }
 
+    public void sendRollbackOrderEvent(Long orderId) {
+         kafkaTemplate.send("order-rollback", String.valueOf(orderId));
+    }
+
 }
