@@ -32,4 +32,8 @@ public class Products extends BaseEntity {
     private int stockQuantity;
     private int salesCount;
     private double discountRate;
+
+    public void increaseStock(int quantity) {
+        this.stockQuantity += quantity;
+    }
 }

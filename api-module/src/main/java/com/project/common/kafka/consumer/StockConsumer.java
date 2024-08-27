@@ -6,26 +6,20 @@ import com.project.common.kafka.message.StockMessage;
 import com.project.common.kafka.message.StockResultMessage;
 import com.project.domain.products.Products;
 import com.project.domain.products.repository.ProductRepository;
+import com.project.order.dto.OrderItemDto;
 import com.project.order.service.OrderService;
 import com.project.product.handler.StockResultHandler;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
 public class StockConsumer {
-    private final StringRedisTemplate redisTemplate;
     private final StockResultHandler stockResultHandler;
     private final ObjectMapper objectMapper;
     private final RedissonClient redissonClient;
@@ -80,5 +74,37 @@ public class StockConsumer {
         orderService.deleteOrder(orderId);
     }
 
+
+    @KafkaListener(topics = "stock-rollback", groupId = "rollback-group")
+    public void rollbackStock(String item){
+        OrderItemDto orderItem;
+        try {
+            orderItem = objectMapper.readValue(item, OrderItemDto.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to deserialize OrderItemDto", e);
+        }
+
+        String key = "stock:" + orderItem.getProductId();
+        RLock lock = redissonClient.getLock(key + ":lock");
+
+        try {
+            if (lock.tryLock(10, 2, TimeUnit.SECONDS)) {
+                try {
+                    Products product = productRepository.findById(orderItem.getProductId())
+                            .orElseThrow(() -> new RuntimeException("Product not found"));
+
+                    product.increaseStock(orderItem.getQuantity());
+                    productRepository.save(product);
+                } finally {
+                    lock.unlock();
+                }
+            } else {
+                // TODO: Lock 획득 실패 시 재시도
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Failed to acquire lock for rollback", e);
+        }
+    }
 
 }
