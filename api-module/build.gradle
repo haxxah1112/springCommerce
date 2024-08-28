@@ -35,7 +35,8 @@ dependencies {
     implementation 'com.querydsl:querydsl-apt:5.0.0:jakarta'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'org.redisson:redisson:3.2.0'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
+
 
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
@@ -44,6 +45,8 @@ dependencies {
     testImplementation 'io.mockk:mockk:1.13.5'
     testImplementation 'org.assertj:assertj-core:3.23.1'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation 'org.testcontainers:kafka:1.17.3'
+    testImplementation 'org.testcontainers:junit-jupiter:1.17.3'
 }
 
 test {

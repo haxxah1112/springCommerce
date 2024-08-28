@@ -2,12 +2,18 @@ package com.project.product.service;
 
 import com.project.common.dto.SearchDto;
 import com.project.common.enums.Condition;
+import com.project.domain.brands.Brands;
 import com.project.domain.products.Categories;
 import com.project.domain.products.Products;
 import com.project.domain.products.repository.ProductQueryRepository;
 import com.project.domain.products.repository.ProductQueryRepositoryImpl;
+import com.project.domain.users.UserRole;
+import com.project.domain.users.Users;
+import com.project.fixture.BrandFixture;
 import com.project.fixture.ProductFixture;
+import com.project.fixture.UserFixture;
 import com.project.product.dto.ProductResponseDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +46,17 @@ class ProductServiceImplTest {
     @InjectMocks
     private ProductServiceImpl productService;
 
-    @Test
+    Brands brandA, brandB;
+
+    @BeforeEach
+    public void setup() {
+        Users user = UserFixture.createUser("userName", "email", UserRole.SELLER);
+
+        brandA = BrandFixture.createBrand("brandA", user);
+        brandB = BrandFixture.createBrand("brandB", user);
+    }
+
+        @Test
     @DisplayName("TOP 카테고리 상품만 반환되며, 판매순으로 정렬된다.")
     public void getProductsByCategoryTest() {
         // Given
@@ -54,8 +70,8 @@ class ProductServiceImplTest {
                 .category(Categories.TOP)
                 .build();
 
-        Products topProduct1 = ProductFixture.createProduct("BrandA", "Top1", Categories.TOP, 1000);
-        Products topProduct2 = ProductFixture.createProduct("BrandB", "Top2", Categories.TOP, 1200);
+        Products topProduct1 = ProductFixture.createProduct("Top1", brandA, 1000, Categories.TOP, 200);
+        Products topProduct2 = ProductFixture.createProduct("Top2", brandB, 1200, Categories.TOP, 100);
         List<Products> topProducts = Arrays.asList(topProduct1, topProduct2);
         Page<Products> topProductPage = new PageImpl<>(topProducts, pageable, topProducts.size());
 
@@ -83,7 +99,7 @@ class ProductServiceImplTest {
         assertThat(result.getContent()).allSatisfy(dto ->
                 assertThat(dto.getCategory()).isEqualTo(Categories.TOP));
         assertThat(result.getContent()).extracting(ProductResponseDto::getBrandName)
-                .containsExactlyInAnyOrder("BrandA", "BrandB");
+                .containsExactlyInAnyOrder("brandA", "brandB");
         assertThat(result.getContent()).extracting(ProductResponseDto::getProductName)
                 .containsExactlyInAnyOrder("Top1", "Top2");
         assertThat(result.getContent()).extracting(ProductResponseDto::getPrice)

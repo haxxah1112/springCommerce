@@ -1,17 +1,17 @@
 package com.project.fixture;
 
+import com.project.domain.brands.Brands;
 import com.project.domain.products.Categories;
 import com.project.domain.products.Products;
 
 public class ProductFixture {
-    public static Products createProduct(String brandName, String productName, Categories category, int price) {
+    public static Products createProduct(String name, Brands brand, int price, Categories category, int stockQuantity) {
         return Products.builder()
-                .id(1L)
-                .brand(BrandFixture.createBrand(brandName))
-                .name(productName)
+                .brand(brand)
+                .name(name)
                 .category(category)
                 .price(price)
-                .stockQuantity(30)
+                .stockQuantity(stockQuantity)
                 .discountRate(0)
                 .build();
     }
