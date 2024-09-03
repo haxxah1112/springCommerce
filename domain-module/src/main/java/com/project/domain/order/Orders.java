@@ -25,4 +25,7 @@ public class Orders {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    public void prepareForShipment() {
+        this.status = OrderStatus.PREPARING_FOR_SHIPMENT;
+    }
 }

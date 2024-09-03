@@ -2,5 +2,6 @@ package com.project.domain.order;
 
 public enum OrderStatus {
     PENDING,
-    COMPLETED
+    COMPLETED,
+    PREPARING_FOR_SHIPMENT
 }
