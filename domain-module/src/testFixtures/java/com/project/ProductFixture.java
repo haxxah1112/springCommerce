@@ -1,4 +1,4 @@
-package com.project.fixture;
+package com.project;
 
 import com.project.domain.brands.Brands;
 import com.project.domain.products.Categories;

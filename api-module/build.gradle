@@ -17,10 +17,13 @@ dependencies {
     implementation project(path: ':domain-module')
     implementation project(path: ':infra-module:redis')
     implementation project(path: ':infra-module:kafka')
+    testImplementation(testFixtures(project(":domain-module")))
+
 
     compileOnly project(':domain-module')
     compileOnly project(':infra-module:redis')
     compileOnly project(':infra-module:kafka')
+
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

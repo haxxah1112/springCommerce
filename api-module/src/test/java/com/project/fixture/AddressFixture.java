@@ -12,5 +12,4 @@ public class AddressFixture {
                 .zipcode(request.getZipcode())
                 .build();
     }
-
 }
