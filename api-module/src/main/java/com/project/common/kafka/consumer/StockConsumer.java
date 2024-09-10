@@ -7,7 +7,6 @@ import com.project.common.kafka.message.StockResultMessage;
 import com.project.domain.products.Products;
 import com.project.domain.products.repository.ProductRepository;
 import com.project.order.dto.OrderItemDto;
-import com.project.order.service.OrderService;
 import com.project.product.handler.StockResultHandler;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
@@ -24,7 +23,7 @@ public class StockConsumer {
     private final ObjectMapper objectMapper;
     private final RedissonClient redissonClient;
     private final ProductRepository productRepository;
-    private final OrderService orderService;
+
 
     @KafkaListener(topics = "stock-check", groupId = "stock-group")
     public int checkStock(Long productId) {
@@ -68,12 +67,6 @@ public class StockConsumer {
 
         return isSuccess;
     }
-
-    @KafkaListener(topics = "order-rollback", groupId = "rollback-group")
-    public void rollbackOrder(Long orderId){
-        orderService.deleteOrder(orderId);
-    }
-
 
     @KafkaListener(topics = "stock-rollback", groupId = "rollback-group")
     public void rollbackStock(String item){

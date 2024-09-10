@@ -24,10 +24,6 @@ public class StockProducer {
         }
     }
 
-    public void sendRollbackOrderEvent(Long orderId) {
-         kafkaTemplate.send("order-rollback", String.valueOf(orderId));
-    }
-
     public void sendRollbackStock(OrderItemDto item) {
         try {
             String message = objectMapper.writeValueAsString(item);
