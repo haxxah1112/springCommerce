@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.common.kafka.message.StockMessage;
 import com.project.common.kafka.message.StockResultMessage;
+import com.project.common.util.JsonUtil;
 import com.project.domain.products.Products;
 import com.project.domain.products.repository.ProductRepository;
 import com.project.order.dto.OrderItemDto;
@@ -20,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class StockConsumer {
     private final StockResultHandler stockResultHandler;
-    private final ObjectMapper objectMapper;
     private final RedissonClient redissonClient;
     private final ProductRepository productRepository;
 
@@ -34,12 +34,7 @@ public class StockConsumer {
 
     @KafkaListener(topics = "stock-decrement", groupId = "stock-group")
     public boolean decrementStock(String message) {
-        StockMessage stockMessage;
-        try {
-            stockMessage = objectMapper.readValue(message, StockMessage.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to deserialize StockMessage", e);
-        }
+        StockMessage stockMessage = JsonUtil.deserialize(message, StockMessage.class);
 
         String key = "stock:" + stockMessage.getProductId();
         RLock lock = redissonClient.getLock(key + ":lock");
@@ -70,13 +65,7 @@ public class StockConsumer {
 
     @KafkaListener(topics = "stock-rollback", groupId = "rollback-group")
     public void rollbackStock(String item){
-        OrderItemDto orderItem;
-        try {
-            orderItem = objectMapper.readValue(item, OrderItemDto.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to deserialize OrderItemDto", e);
-        }
-
+        OrderItemDto orderItem = JsonUtil.deserialize(item, OrderItemDto.class);
         String key = "stock:" + orderItem.getProductId();
         RLock lock = redissonClient.getLock(key + ":lock");
 
@@ -91,8 +80,6 @@ public class StockConsumer {
                 } finally {
                     lock.unlock();
                 }
-            } else {
-                // TODO: Lock 획득 실패 시 재시도
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
