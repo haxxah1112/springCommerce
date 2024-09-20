@@ -39,7 +39,7 @@ public class JwtProvider {
     public String generateToken(JwtPayload jwtPayload) {
 
         return Jwts.builder()
-                .claim("email", jwtPayload.email())
+                .claim("userId", jwtPayload.userId())
                 .claim("userRole", jwtPayload.userRole())
                 .issuedAt(jwtPayload.issuedAt())
                 .expiration(new Date(jwtPayload.issuedAt().getTime() + accessExpiration))
@@ -48,7 +48,8 @@ public class JwtProvider {
     }
 
     public String generateRefreshToken(JwtPayload jwtPayload){
-        Claims claims = Jwts.claims().setSubject(jwtPayload.email()).build();
+        String userId = jwtPayload.userId().toString();
+        Claims claims = Jwts.claims().setSubject(userId).build();
         Date expireDate = new Date(jwtPayload.issuedAt().getTime() + refreshExpiration);
 
         String refreshToken = Jwts.builder()
@@ -59,7 +60,7 @@ public class JwtProvider {
                 .compact();
 
         redisTemplate.opsForValue().set(
-                jwtPayload.email(),
+                userId,
                 refreshToken,
                 refreshExpiration,
                 TimeUnit.MILLISECONDS
@@ -73,7 +74,7 @@ public class JwtProvider {
             Jws<Claims> claimsJws = Jwts.parser().verifyWith(secretKey).build()
                     .parseSignedClaims(jwtToken);
 
-            return new JwtPayload(claimsJws.getPayload().get(emailKey, String.class),
+            return new JwtPayload(claimsJws.getPayload().get("userId", Long.class),
                     claimsJws.getPayload().getIssuedAt(),
                     findUserRole(claimsJws.getPayload().get("userRole", String.class)));
         } catch (JwtException e) {
