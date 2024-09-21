@@ -32,6 +32,11 @@ public class StockConsumer {
         return product.getStockQuantity();
     }
 
+    public int checkPrice(Long productId) {
+        Products product = productRepository.findById(productId).orElseThrow();
+        return product.getPrice();
+    }
+
     @KafkaListener(topics = "stock-decrement", groupId = "stock-group")
     public boolean decrementStock(String message) {
         StockMessage stockMessage = JsonUtil.deserialize(message, StockMessage.class);
@@ -43,7 +48,9 @@ public class StockConsumer {
             if (lock.tryLock(10, 2, TimeUnit.SECONDS)) {
                 try {
                     Integer currentStock = checkStock(stockMessage.getProductId());
-                    if (currentStock >= stockMessage.getQuantity()) {
+                    int currentPrice = checkPrice(stockMessage.getProductId());
+
+                    if (currentStock >= stockMessage.getQuantity() && currentPrice == stockMessage.getPrice()) {
 
                         isSuccess = true;
                     }

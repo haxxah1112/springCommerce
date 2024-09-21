@@ -49,11 +49,17 @@ public class OrderServiceImpl implements OrderService {
             Products product = productRepository.findById(itemDto.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
 
-            stockProducer.sendOrderEvent(new StockMessage(orderId, itemDto.getProductId(), itemDto.getQuantity()));
+            stockProducer.sendOrderEvent(new StockMessage(orderId, itemDto.getProductId(), itemDto.getQuantity(), itemDto.getPrice()));
 
             OrderItems orderItem = orderConverter.convertOrderItemDtoToOrderItemEntity(itemDto, order, product);
             orderItemRepository.save(orderItem);
         }
+
+        int totalPrice = request.getItems().stream()
+                .mapToInt(OrderItemDto::getPrice)
+                .sum();
+
+        order.completed(totalPrice);
 
         return ApiResponse.success(orderRepository.save(order));
     }

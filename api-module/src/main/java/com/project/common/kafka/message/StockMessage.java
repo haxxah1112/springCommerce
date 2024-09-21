@@ -9,4 +9,5 @@ public class StockMessage {
     private Long orderId;
     private Long productId;
     private int quantity;
+    private int price;
 }
