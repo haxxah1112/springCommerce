@@ -34,4 +34,10 @@ public class Users extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    private int point;
+
+    public void addPoint(int pointsToAdd) {
+        this.point = this.point + pointsToAdd;
+    }
 }
