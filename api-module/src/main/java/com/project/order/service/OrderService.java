@@ -8,4 +8,6 @@ public interface OrderService {
     ApiResponse createOrder(OrderRequestDto request);
 
     void deleteOrder(Long orderId);
+
+    ApiResponse confirmPurchase(Long orderId);
 }

@@ -7,6 +7,7 @@ import com.project.order.service.OrderService;
 import com.project.security.ValidateToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,5 +20,10 @@ public class OrderController {
     @ValidateToken(checkLevel = UserRole.BUYER)
     public ResponseEntity<ApiResponse> createOrder(@RequestBody OrderRequestDto request) {
         return ResponseEntity.ok(orderService.createOrder(request));
+    }
+
+    @PostMapping("api/v1/orders/{orderId}/confirm")
+    public ResponseEntity<ApiResponse> confirmPurchase(@PathVariable Long orderId) {
+        return ResponseEntity.ok(orderService.confirmPurchase(orderId));
     }
 }

@@ -10,5 +10,6 @@ import lombok.Setter;
 public class OrderItemDto {
     private Long productId;
     private int quantity;
+    private int price;
     private boolean isSuccess;
 }

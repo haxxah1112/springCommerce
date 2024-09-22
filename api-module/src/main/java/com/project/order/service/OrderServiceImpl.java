@@ -11,11 +11,13 @@ import com.project.domain.products.Products;
 import com.project.domain.products.repository.ProductRepository;
 import com.project.domain.users.Users;
 import com.project.domain.users.repository.UserRepository;
+import com.project.event.AddPointEvent;
 import com.project.order.dto.OrderItemDto;
 import com.project.order.dto.OrderRequestDto;
 import com.project.order.manager.StockResultManager;
 import com.project.order.manager.StockResultContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final StockProducer stockProducer;
     private final StockResultManager orderContextManager;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -74,5 +77,15 @@ public class OrderServiceImpl implements OrderService {
         }
 
         orderRepository.delete(order);
+    }
+
+    @Override
+    public ApiResponse confirmPurchase(Long orderId) {
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        order.confirmPurchase();
+        Orders save = orderRepository.save(order);
+
+        eventPublisher.publishEvent(new AddPointEvent(orderId));
+        return ApiResponse.success(save);
     }
 }
