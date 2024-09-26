@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @AllArgsConstructor
@@ -27,6 +29,8 @@ public class Orders extends BaseEntity {
     private OrderStatus status;
 
     private int totalPrice;
+
+    private LocalDateTime deliveryCompletedAt;
 
     public void prepareForShipment() {
         this.status = OrderStatus.PREPARING_FOR_SHIPMENT;
