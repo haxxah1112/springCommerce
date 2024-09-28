@@ -2,16 +2,28 @@ package com.project.common.exception.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum AuthenticationError implements ErrorCode{
-    EMAIL_ALREADY_EXIST("SIGNUP_001", "email is already exist"),
-    USER_NOT_FOUND("LOGIN_001", "request email is not found"),
-    INVALID_PASSWORD("LOGIN_002", "password is not valid with email"),
-    NO_PERMISSION("AUTH_001", "no permission"),
-    INVALID_TOKEN("AUTH_002", "invalid token");
+public enum AuthenticationError implements ErrorCode {
+    EMAIL_ALREADY_EXIST("SIGNUP_001", "Email is already exist", HttpStatus.CONFLICT),
+    USER_NOT_FOUND("LOGIN_001", "Request email is not found", HttpStatus.NOT_FOUND),
+    INVALID_PASSWORD("LOGIN_002", "Password is not valid with email", HttpStatus.UNAUTHORIZED),
+    NO_PERMISSION("AUTH_001", "No permission", HttpStatus.FORBIDDEN),
+    INVALID_TOKEN("AUTH_002", "Invalid token", HttpStatus.UNAUTHORIZED);
 
     private String code;
     private String message;
+    private HttpStatus status;
+
+    @Override
+    public HttpStatus getStatus() {
+        return this.status;
+    }
+
+    @Override
+    public String getName() {
+        return this.name();
+    }
 }
