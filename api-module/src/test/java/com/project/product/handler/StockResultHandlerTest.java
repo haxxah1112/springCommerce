@@ -1,6 +1,10 @@
 package com.project.product.handler;
 
+import com.project.common.kafka.consumer.OrderConsumer;
 import com.project.common.kafka.message.StockResultMessage;
+import com.project.common.kafka.producer.OrderProducer;
+import com.project.common.kafka.producer.StockProducer;
+import com.project.order.dto.OrderItemDto;
 import com.project.order.manager.StockResultContext;
 import com.project.order.manager.StockResultManager;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +13,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,12 +28,21 @@ class StockResultHandlerTest {
     @Mock
     private StockResultManager stockResultManager;
 
+    @Mock
+    private OrderProducer orderProducer;
+
+    @Mock
+    private StockProducer stockProducer;
+
     @Test
     @DisplayName("재고 결과 성공 처리 - 모든 상품을 검사하여 성공을 반환한다")
     public void handleStockResult_Success() {
         //Given
         Long orderId = 1L;
-        StockResultContext context = new StockResultContext(2);
+        List<OrderItemDto> items = new ArrayList<>();
+        items.add(new OrderItemDto(1L, 10, 1000, true));
+        items.add(new OrderItemDto(2L, 5, 2000, true));
+        StockResultContext context = new StockResultContext(2, items);
         when(stockResultManager.getContext(orderId)).thenReturn(context);
 
         StockResultMessage firstResultMessage = new StockResultMessage(orderId, 1L, 10, true);
@@ -46,8 +62,13 @@ class StockResultHandlerTest {
     public void handleStockResult_Fail() {
         //Given
         Long orderId = 1L;
-        StockResultContext context = new StockResultContext(2);
+        List<OrderItemDto> items = new ArrayList<>();
+        items.add(new OrderItemDto(1L, 10, 1000, true));
+        items.add(new OrderItemDto(2L, 5, 2000, true));
+        StockResultContext context = new StockResultContext(2, items);
         when(stockResultManager.getContext(orderId)).thenReturn(context);
+        doNothing().when(orderProducer).sendRollbackOrderEvent(orderId);
+        doNothing().when(stockProducer).sendRollbackStock(any(OrderItemDto.class));
 
         StockResultMessage firstResultMessage = new StockResultMessage(orderId, 1L, 10, true);
         StockResultMessage secondResultMessage = new StockResultMessage(orderId, 2L, 5, false);

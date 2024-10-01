@@ -2,7 +2,7 @@ package com.project.address.service;
 
 import com.project.address.dto.AddressRequestDto;
 import com.project.address.dto.AddressResponseDto;
-import com.project.common.ApiResponse;
+import com.project.common.dto.ApiResponse;
 import com.project.domain.address.Addresses;
 import com.project.domain.address.repository.AddressRepository;
 import com.project.fixture.AddressFixture;

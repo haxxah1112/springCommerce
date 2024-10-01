@@ -1,6 +1,6 @@
 package com.project.user.service;
 
-import com.project.common.ApiResponse;
+import com.project.common.dto.ApiResponse;
 import com.project.domain.users.UserRole;
 import com.project.domain.users.Users;
 import com.project.security.JwtPayload;
