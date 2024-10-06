@@ -59,7 +59,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
 
         switch (condition) {
             case NEW:
-                return product.createDate.desc();
+                return product.createdAt.desc();
             case BEST:
                 return product.salesCount.desc();
             case DISCOUNT:
