@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ApiResponse<T> {
-    enum ResponseStatus {
+    public enum ResponseStatus {
         SUCCESS, FAIL
     }
     private ResponseStatus status;
