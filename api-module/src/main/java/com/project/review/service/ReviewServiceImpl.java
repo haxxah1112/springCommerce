@@ -12,6 +12,7 @@ import com.project.domain.review.repository.ReviewRepository;
 import com.project.domain.users.Users;
 import com.project.policy.ReviewPolicy;
 import com.project.review.dto.ReviewRequestDto;
+import com.project.review.dto.ReviewResponseDto;
 import com.project.security.UserContextProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,9 @@ public class ReviewServiceImpl implements ReviewService {
         reviewPolicy.validateReviewCreation(order);
 
         Reviews review = reviewConverter.convertRequestToReviewEntity(request, user, order, product);
-        return ApiResponse.success(reviewRepository.save(review));
+        Reviews savedReview = reviewRepository.save(review);
+
+        ReviewResponseDto responseDto = reviewConverter.convertEntityToResponseDto(savedReview);
+        return ApiResponse.success(responseDto);
     }
 }
