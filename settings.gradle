@@ -6,4 +6,5 @@ include 'infra-module:redis'
 include 'infra-module:kafka'
 findProject(':infra-module:kafka')?.name = 'kafka'
 include 'batch-module'
+include 'common-module'
 

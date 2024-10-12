@@ -1,6 +1,6 @@
-package com.project.common.exception;
+package com.project.exception;
 
-import com.project.common.exception.error.ErrorCode;
+import com.project.exception.error.ErrorCode;
 
 public class NotFoundException extends CustomException {
     public NotFoundException(ErrorCode errorCode) {

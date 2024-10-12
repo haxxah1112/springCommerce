@@ -1,6 +1,6 @@
 package com.project.order.service;
 
-import com.project.common.ApiResponse;
+import com.project.common.dto.ApiResponse;
 import com.project.common.kafka.message.StockMessage;
 import com.project.common.kafka.producer.StockProducer;
 import com.project.domain.order.OrderItems;
@@ -12,6 +12,8 @@ import com.project.domain.products.repository.ProductRepository;
 import com.project.domain.users.Users;
 import com.project.domain.users.repository.UserRepository;
 import com.project.event.AddPointEvent;
+import com.project.exception.NotFoundException;
+import com.project.exception.error.CustomError;
 import com.project.order.dto.OrderItemDto;
 import com.project.order.dto.OrderRequestDto;
 import com.project.order.manager.StockResultManager;
@@ -39,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public ApiResponse createOrder(OrderRequestDto request) {
         Users user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException(CustomError.NOT_FOUND));
 
         Orders order = orderConverter.convertRequestDtoToOrderEntity(request, user);
         order = orderRepository.save(order);

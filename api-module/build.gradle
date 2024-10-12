@@ -17,6 +17,7 @@ dependencies {
     implementation project(path: ':domain-module')
     implementation project(path: ':infra-module:redis')
     implementation project(path: ':infra-module:kafka')
+    implementation project(path: ':common-module')
     testImplementation(testFixtures(project(":domain-module")))
 
 

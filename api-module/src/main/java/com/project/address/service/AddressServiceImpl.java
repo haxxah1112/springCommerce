@@ -2,10 +2,10 @@ package com.project.address.service;
 
 import com.project.address.dto.AddressRequestDto;
 import com.project.address.dto.AddressResponseDto;
-import com.project.common.ApiResponse;
-import com.project.common.exception.AddressException;
+import com.project.common.dto.ApiResponse;
 import com.project.domain.address.Addresses;
 import com.project.domain.address.repository.AddressRepository;
+import com.project.exception.AddressException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
 
-    private AddressConverter addressConverter;
-    private AddressRepository addressRepository;
+    private final AddressConverter addressConverter;
+    private final AddressRepository addressRepository;
 
     @Override
     public ApiResponse createAddress(AddressRequestDto request) {
