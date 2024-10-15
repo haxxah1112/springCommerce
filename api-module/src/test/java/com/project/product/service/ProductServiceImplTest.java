@@ -1,17 +1,18 @@
 package com.project.product.service;
 
+import com.project.BrandFixture;
+import com.project.ProductFixture;
+import com.project.UserFixture;
+import com.project.common.dto.ApiResponse;
 import com.project.common.dto.SearchDto;
 import com.project.common.enums.Condition;
 import com.project.domain.brands.Brands;
 import com.project.domain.products.Categories;
 import com.project.domain.products.Products;
 import com.project.domain.products.repository.ProductQueryRepository;
-import com.project.domain.products.repository.ProductQueryRepositoryImpl;
+import com.project.domain.products.repository.ProductRepository;
 import com.project.domain.users.UserRole;
 import com.project.domain.users.Users;
-import com.project.fixture.BrandFixture;
-import com.project.fixture.ProductFixture;
-import com.project.fixture.UserFixture;
 import com.project.product.dto.ProductResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +44,9 @@ class ProductServiceImplTest {
 
     @Mock
     private ProductConverter productConverter;
+
+    @Mock
+    private ProductRepository productRepository;
 
     @InjectMocks
     private ProductServiceImpl productService;
@@ -107,5 +112,38 @@ class ProductServiceImplTest {
         assertThat(result.getContent()).isSortedAccordingTo(
                 Comparator.comparing(ProductResponseDto::getSalesCount).reversed());
 
+    }
+
+    @Test
+    @DisplayName("상품 ID로 상품 상세 정보를 조회한다.")
+    void getProductDetailTest() {
+        //Given
+        Long productId = 1L;
+        Products product = ProductFixture.createProduct("Top1", brandA, 1000, Categories.TOP, 200);
+
+        ProductResponseDto productResponseDto = ProductResponseDto.builder()
+                .productId(product.getId())
+                .brandName(product.getBrand().getName())
+                .productName(product.getName())
+                .category(product.getCategory())
+                .price(product.getPrice())
+                .stockQuantity(product.getStockQuantity())
+                .discountRate(product.getDiscountRate())
+                .build();
+
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productConverter.convertToDto(product)).thenReturn(productResponseDto);
+
+        //When
+        ApiResponse<ProductResponseDto> result = productService.getProductDetail(productId);
+
+        //Then
+        assertThat(result.getStatus()).isEqualTo(ApiResponse.ResponseStatus.SUCCESS);
+        assertThat(result.getData().getBrandName()).isEqualTo("brandA");
+        assertThat(result.getData().getProductName()).isEqualTo("Top1");
+        assertThat(result.getData().getCategory()).isEqualTo(Categories.TOP);
+        assertThat(result.getData().getPrice()).isEqualTo(1000);
+        assertThat(result.getData().getStockQuantity()).isEqualTo(200);
+        assertThat(result.getData().getDiscountRate()).isEqualTo(0.0);
     }
 }
