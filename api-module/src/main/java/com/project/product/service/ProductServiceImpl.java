@@ -29,6 +29,9 @@ public class ProductServiceImpl implements ProductService {
         Products product = productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(CustomError.NOT_FOUND));
 
+        product.increaseViewCount();
+        productRepository.save(product);
+
         return ApiResponse.success(productConverter.convertToDto(product));
     }
 

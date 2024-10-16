@@ -32,6 +32,7 @@ public class Products extends BaseEntity {
     private int stockQuantity;
     private int salesCount;
     private double discountRate;
+    private int viewCount = 0;
 
     public void increaseStock(int quantity) {
         this.stockQuantity += quantity;
@@ -39,5 +40,9 @@ public class Products extends BaseEntity {
 
     public void decreaseStock(int quantity) {
         this.stockQuantity -= quantity;
+    }
+
+    public void increaseViewCount() {
+        this.viewCount += 1;
     }
 }
