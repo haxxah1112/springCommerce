@@ -1,6 +1,6 @@
 package com.project.order.service;
 
-import com.project.common.ApiResponse;
+import com.project.common.dto.ApiResponse;
 import com.project.order.dto.OrderRequestDto;
 
 public interface OrderService {

@@ -1,8 +1,8 @@
 package com.project.security;
 
-import com.project.common.exception.AuthenticationException;
-import com.project.common.exception.error.AuthenticationError;
 import com.project.domain.users.UserRole;
+import com.project.exception.AuthenticationException;
+import com.project.exception.error.AuthenticationError;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;

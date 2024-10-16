@@ -1,6 +1,6 @@
 package com.project.order.controller;
 
-import com.project.common.ApiResponse;
+import com.project.common.dto.ApiResponse;
 import com.project.domain.users.UserRole;
 import com.project.order.dto.OrderRequestDto;
 import com.project.order.service.OrderService;

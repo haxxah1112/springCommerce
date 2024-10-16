@@ -1,9 +1,9 @@
 package com.project.security;
 
-import com.project.common.exception.NotFoundException;
-import com.project.common.exception.error.CustomError;
 import com.project.domain.users.Users;
 import com.project.domain.users.repository.UserRepository;
+import com.project.exception.NotFoundException;
+import com.project.exception.error.CustomError;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

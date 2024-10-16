@@ -1,7 +1,7 @@
 package com.project.security;
 
-import com.project.common.exception.AuthenticationException;
-import com.project.common.exception.error.AuthenticationError;
+import com.project.exception.AuthenticationException;
+import com.project.exception.error.AuthenticationError;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

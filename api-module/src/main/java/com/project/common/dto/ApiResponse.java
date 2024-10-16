@@ -1,7 +1,6 @@
 package com.project.common.dto;
 
-import com.project.common.exception.error.CustomError;
-import com.project.common.exception.error.ErrorCode;
+import com.project.exception.error.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

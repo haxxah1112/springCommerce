@@ -1,8 +1,6 @@
 package com.project.review.service;
 
 import com.project.common.dto.ApiResponse;
-import com.project.common.exception.NotFoundException;
-import com.project.common.exception.error.CustomError;
 import com.project.domain.order.Orders;
 import com.project.domain.order.repository.OrderRepository;
 import com.project.domain.products.Products;
@@ -10,6 +8,8 @@ import com.project.domain.products.repository.ProductRepository;
 import com.project.domain.review.Reviews;
 import com.project.domain.review.repository.ReviewRepository;
 import com.project.domain.users.Users;
+import com.project.exception.NotFoundException;
+import com.project.exception.error.CustomError;
 import com.project.policy.ReviewPolicy;
 import com.project.review.dto.ReviewRequestDto;
 import com.project.review.dto.ReviewResponseDto;

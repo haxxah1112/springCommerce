@@ -1,9 +1,9 @@
 package com.project.user.service;
 
-import com.project.common.ApiResponse;
-import com.project.common.exception.AuthenticationException;
-import com.project.common.exception.error.AuthenticationError;
+import com.project.common.dto.ApiResponse;
 import com.project.domain.users.Users;
+import com.project.exception.AuthenticationException;
+import com.project.exception.error.AuthenticationError;
 import com.project.security.JwtPayload;
 import com.project.security.JwtProvider;
 import com.project.user.dto.UserLoginRequestDto;
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
             throw new AuthenticationException(AuthenticationError.INVALID_PASSWORD);
         }
 
-        JwtPayload jwtPayload = new JwtPayload(loginRequest.getEmail(), new Date(), findUser.getUserRole());
+        JwtPayload jwtPayload = new JwtPayload(findUser.getId(), new Date(), findUser.getUserRole());
         String token = jwtProvider.generateToken(jwtPayload);
         jwtProvider.generateRefreshToken(jwtPayload);
 

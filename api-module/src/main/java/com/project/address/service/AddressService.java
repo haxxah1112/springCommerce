@@ -1,9 +1,7 @@
 package com.project.address.service;
 
 import com.project.address.dto.AddressRequestDto;
-import com.project.common.ApiResponse;
-
-import java.util.List;
+import com.project.common.dto.ApiResponse;
 
 public interface AddressService {
     ApiResponse createAddress(AddressRequestDto request);
