@@ -1,6 +1,7 @@
 package com.project.filter;
 
-import com.project.security.JwtUtil;
+import com.project.security.JwtProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.Ordered;
@@ -12,12 +13,9 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter implements GatewayFilter, Ordered {
-    private final JwtUtil jwtUtil;
-
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
+    private final JwtProvider jwtProvider;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -29,11 +27,11 @@ public class JwtAuthenticationFilter implements GatewayFilter, Ordered {
         }
 
         String jwt = token.substring(7);
-        if (!jwtUtil.verifyToken(jwt)) {
+        if (!jwtProvider.verifyToken(jwt)) {
             return onError(exchange, "Invalid token", HttpStatus.UNAUTHORIZED);
         }
 
-        String userId = jwtUtil.getUserIdByJwt(jwt);
+        String userId = jwtProvider.getUserIdByJwt(jwt);
         ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
                 .header("X-User-Id", userId)
                 .build();

@@ -1,19 +1,14 @@
 package com.project.security;
 
-import com.project.exception.AuthenticationException;
-import com.project.exception.error.AuthenticationError;
+import com.project.dto.RefreshTokenDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import static com.project.domain.users.UserRole.findUserRole;
 
 @Component
 public class JwtProvider {
@@ -21,17 +16,12 @@ public class JwtProvider {
     @Value("${service.jwt.access-expiration}")
     private Long accessExpiration;
 
-    @Value("${service.jwt.email-key}")
-    private String emailKey;
-
     @Value("${service.jwt.refresh-expiration}")
     private Long refreshExpiration;
 
     private final SecretKey secretKey;
-    private final RedisTemplate<String, String> redisTemplate;
 
-    public JwtProvider(@Value("${service.jwt.secret-key}") String secretKey, RedisTemplate<String, String> redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public JwtProvider(@Value("${service.jwt.secret-key}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -40,14 +30,13 @@ public class JwtProvider {
 
         return Jwts.builder()
                 .claim("userId", jwtPayload.userId())
-                .claim("userRole", jwtPayload.userRole())
                 .issuedAt(jwtPayload.issuedAt())
                 .expiration(new Date(jwtPayload.issuedAt().getTime() + accessExpiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String generateRefreshToken(JwtPayload jwtPayload){
+    public RefreshTokenDto generateRefreshToken(JwtPayload jwtPayload){
         String userId = jwtPayload.userId().toString();
         Claims claims = Jwts.claims().setSubject(userId).build();
         Date expireDate = new Date(jwtPayload.issuedAt().getTime() + refreshExpiration);
@@ -59,26 +48,23 @@ public class JwtProvider {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
 
-        redisTemplate.opsForValue().set(
-                userId,
-                refreshToken,
-                refreshExpiration,
-                TimeUnit.MILLISECONDS
-        );
-
-        return refreshToken;
+        return new RefreshTokenDto(refreshToken, refreshExpiration);
     }
 
-    public JwtPayload verifyToken(String jwtToken) {
+    public boolean verifyToken(String jwtToken) {
         try {
-            Jws<Claims> claimsJws = Jwts.parser().verifyWith(secretKey).build()
-                    .parseSignedClaims(jwtToken);
+            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(jwtToken);
 
-            return new JwtPayload(claimsJws.getPayload().get("userId", Long.class),
-                    claimsJws.getPayload().getIssuedAt(),
-                    findUserRole(claimsJws.getPayload().get("userRole", String.class)));
-        } catch (JwtException e) {
-            throw new AuthenticationException(AuthenticationError.INVALID_TOKEN, e);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
+    }
+
+    public String getUserIdByJwt(String jwtToken) {
+        Jws<Claims> claimsJws = Jwts.parser().verifyWith(secretKey).build()
+                .parseSignedClaims(jwtToken);
+
+        return claimsJws.getBody().get("userId", String.class);
     }
 }

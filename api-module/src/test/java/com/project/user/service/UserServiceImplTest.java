@@ -3,8 +3,9 @@ package com.project.user.service;
 import com.project.common.dto.ApiResponse;
 import com.project.domain.users.UserRole;
 import com.project.domain.users.Users;
-import com.project.security.JwtPayload;
+import com.project.dto.RefreshTokenDto;
 import com.project.security.JwtProvider;
+import com.project.security.JwtPayload;
 import com.project.user.dto.UserLoginRequestDto;
 import com.project.user.dto.UserLoginResponseDto;
 import com.project.user.dto.UserRegisterRequestDto;
@@ -91,12 +92,13 @@ class UserServiceImplTest {
 
         String accessToken = "access-token";
         String refreshToken = "refresh-token";
+        RefreshTokenDto refreshTokenDto = new RefreshTokenDto(refreshToken, 1000L);
 
         //When
         when(userRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())).thenReturn(true);
         when(jwtProvider.generateToken(any(JwtPayload.class))).thenReturn(accessToken);
-        when(jwtProvider.generateRefreshToken(any(JwtPayload.class))).thenReturn(refreshToken);
+        when(jwtProvider.generateRefreshToken(any(JwtPayload.class))).thenReturn(refreshTokenDto);
 
         ApiResponse<UserLoginResponseDto> response = userService.loginUser(loginRequest);
 
