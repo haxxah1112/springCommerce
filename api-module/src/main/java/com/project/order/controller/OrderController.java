@@ -4,7 +4,7 @@ import com.project.common.dto.ApiResponse;
 import com.project.domain.users.UserRole;
 import com.project.order.dto.OrderRequestDto;
 import com.project.order.service.OrderService;
-import com.project.security.ValidateToken;
+import com.project.security.CheckRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     private final OrderService orderService;
     @PostMapping("api/v1/orders")
-    @ValidateToken(checkLevel = UserRole.BUYER)
+    @CheckRole(accessLevel = UserRole.BUYER)
     public ResponseEntity<ApiResponse> createOrder(@RequestBody OrderRequestDto request) {
         return ResponseEntity.ok(orderService.createOrder(request));
     }

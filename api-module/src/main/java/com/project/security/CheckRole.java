@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidateToken {
-    UserRole checkLevel() default UserRole.BUYER;
+public @interface CheckRole {
+    UserRole accessLevel() default UserRole.BUYER;
 }
