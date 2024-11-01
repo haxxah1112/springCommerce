@@ -2,8 +2,10 @@ package com.project.user.service;
 
 import com.project.common.dto.ApiResponse;
 import com.project.domain.users.Users;
+import com.project.dto.RefreshTokenDto;
 import com.project.exception.AuthenticationException;
 import com.project.exception.error.AuthenticationError;
+import com.project.security.RedisTokenStorage;
 import com.project.security.JwtPayload;
 import com.project.security.JwtProvider;
 import com.project.user.dto.UserLoginRequestDto;
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserConverter userConverter;
     private final PasswordEncoder passwordEncoder;
+    private final RedisTokenStorage redisTokenStorage;
     private final JwtProvider jwtProvider;
 
     @Override
@@ -53,10 +56,34 @@ public class UserServiceImpl implements UserService {
             throw new AuthenticationException(AuthenticationError.INVALID_PASSWORD);
         }
 
-        JwtPayload jwtPayload = new JwtPayload(findUser.getId(), new Date(), findUser.getUserRole());
-        String token = jwtProvider.generateToken(jwtPayload);
-        jwtProvider.generateRefreshToken(jwtPayload);
+        JwtPayload jwtPayload = new JwtPayload(String.valueOf(findUser.getId()), new Date());
+        String accessToken = jwtProvider.generateToken(jwtPayload);
 
-        return ApiResponse.success(new UserLoginResponseDto(findUser.getName(), findUser.getEmail(), token));
+        RefreshTokenDto refreshToken = jwtProvider.generateRefreshToken(jwtPayload);
+        redisTokenStorage.saveRefreshToken(jwtPayload, refreshToken);
+
+
+        return ApiResponse.success(new UserLoginResponseDto(findUser.getName(), findUser.getEmail(), accessToken, refreshToken.token()));
+    }
+
+    @Override
+    public ApiResponse<String> refreshToken(String refreshToken) {
+        String token = jwtProvider.extractToken(refreshToken);
+
+        String userId = jwtProvider.getUserIdByJwt(token);
+        String storedRefreshToken = redisTokenStorage.getRefreshToken(userId);
+
+        if (storedRefreshToken == null) {
+            throw new AuthenticationException(AuthenticationError.REFRESH_TOKEN_NOT_FOUND);
+        }
+
+        if (!jwtProvider.verifyToken(storedRefreshToken)) {
+            throw new AuthenticationException(AuthenticationError.INVALID_REFRESH_TOKEN);
+        }
+
+        JwtPayload jwtPayload = new JwtPayload(userId, new Date());
+        String newAccessToken = jwtProvider.generateToken(jwtPayload);
+
+        return ApiResponse.success(newAccessToken);
     }
 }

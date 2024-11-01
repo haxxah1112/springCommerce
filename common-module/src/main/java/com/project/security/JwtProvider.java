@@ -26,7 +26,7 @@ public class JwtProvider {
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateToken(JwtPayload jwtPayload) {
+    public String generateAccessToken(JwtPayload jwtPayload) {
 
         return Jwts.builder()
                 .claim("userId", jwtPayload.userId())
@@ -37,15 +37,13 @@ public class JwtProvider {
     }
 
     public RefreshTokenDto generateRefreshToken(JwtPayload jwtPayload){
-        String userId = jwtPayload.userId().toString();
-        Claims claims = Jwts.claims().setSubject(userId).build();
         Date expireDate = new Date(jwtPayload.issuedAt().getTime() + refreshExpiration);
 
         String refreshToken = Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(jwtPayload.issuedAt())
-                .setExpiration(expireDate)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .claim("userId", jwtPayload.userId())
+                .issuedAt(jwtPayload.issuedAt())
+                .expiration(expireDate)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
 
         return new RefreshTokenDto(refreshToken, refreshExpiration);
@@ -67,4 +65,9 @@ public class JwtProvider {
 
         return claimsJws.getBody().get("userId", String.class);
     }
+
+    public String extractToken(String bearerToken) {
+        return bearerToken.startsWith("Bearer ") ? bearerToken.substring(7) : bearerToken;
+    }
+
 }

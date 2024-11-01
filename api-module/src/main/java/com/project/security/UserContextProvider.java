@@ -14,11 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 @RequiredArgsConstructor
 public class UserContextProvider {
-    private final JwtStorage jwtProvider;
     private final UserRepository userRepository;
-
-    @Value("${service.jwt.header}")
-    private String requestHeaderKey;
 
     public String getCurrentUserId() {
         ServletRequestAttributes requestAttributes =

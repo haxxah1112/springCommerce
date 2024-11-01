@@ -11,7 +11,10 @@ public enum AuthenticationError implements ErrorCode {
     USER_NOT_FOUND("LOGIN_001", "Request email is not found", HttpStatus.NOT_FOUND),
     INVALID_PASSWORD("LOGIN_002", "Password is not valid with email", HttpStatus.UNAUTHORIZED),
     NO_PERMISSION("AUTH_001", "No permission", HttpStatus.FORBIDDEN),
-    INVALID_TOKEN("AUTH_002", "Invalid token", HttpStatus.UNAUTHORIZED);
+    INVALID_TOKEN("AUTH_002", "Invalid token", HttpStatus.UNAUTHORIZED),
+    REFRESH_TOKEN_NOT_FOUND("AUTH_004", "Refresh token is not found", HttpStatus.NOT_FOUND),
+    INVALID_REFRESH_TOKEN("AUTH_005", "Invalid refresh token", HttpStatus.UNAUTHORIZED);
+
 
     private String code;
     private String message;

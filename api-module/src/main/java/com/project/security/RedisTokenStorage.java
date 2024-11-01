@@ -10,9 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
-public class JwtStorage {
+public class RedisTokenStorage implements TokenStorage {
     private final RedisTemplate<String, String> redisTemplate;
 
+    @Override
     public void saveRefreshToken(JwtPayload jwtUserPayload, RefreshTokenDto refreshToken) {
         redisTemplate.opsForValue().set(
                 jwtUserPayload.userId(),
@@ -20,5 +21,15 @@ public class JwtStorage {
                 refreshToken.refreshTokenExpiration(),
                 TimeUnit.MILLISECONDS
         );
+    }
+
+    @Override
+    public String getRefreshToken(String userId) {
+        return redisTemplate.opsForValue().get(userId);
+    }
+
+    @Override
+    public void deleteRefreshToken(String userId) {
+        redisTemplate.delete(userId);
     }
 }

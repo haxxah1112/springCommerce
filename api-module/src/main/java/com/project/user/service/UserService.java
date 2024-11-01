@@ -11,4 +11,6 @@ public interface UserService {
     ApiResponse<UserRegisterResponseDto> registerUser(UserRegisterRequestDto signUpRequest);
 
     ApiResponse<UserLoginResponseDto> loginUser(UserLoginRequestDto loginRequest);
+
+    ApiResponse<String> refreshToken(String refreshToken);
 }

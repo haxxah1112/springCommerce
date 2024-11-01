@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter implements GatewayFilter, Ordered {
             return onError(exchange, "No authorization header", HttpStatus.UNAUTHORIZED);
         }
 
-        String jwt = token.substring(7);
+        String jwt = jwtProvider.extractToken(token);
         if (!jwtProvider.verifyToken(jwt)) {
             return onError(exchange, "Invalid token", HttpStatus.UNAUTHORIZED);
         }
