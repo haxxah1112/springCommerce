@@ -32,7 +32,7 @@ class CompletedPaymentReaderTest {
 
     @Test
     void testRead() throws Exception {
-        // Given
+        //Given
         Orders order = OrderFixture.createOrder(UserFixture.createDefaultUser(), OrderStatus.COMPLETED);
         Payments payment1 = PaymentFixture.createPayment(order, PaymentStatus.COMPLETED);
         Payments payment2 = PaymentFixture.createPayment(order, PaymentStatus.CANCELED);
@@ -43,12 +43,12 @@ class CompletedPaymentReaderTest {
                 .thenReturn(payments)
                 .thenReturn(Collections.emptyList());
 
-        // When
+        //When
         Payments firstRead = paymentReader.read();
         Payments secondRead = paymentReader.read();
         Payments thirdRead = paymentReader.read();
 
-        // Then
+        //Then
         assertEquals(payment1, firstRead);
         assertEquals(payment3, secondRead);
         assertEquals(null, thirdRead);

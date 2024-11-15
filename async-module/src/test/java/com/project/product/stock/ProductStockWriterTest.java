@@ -23,14 +23,21 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class ProductStockWriterTest {
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private StockLogRepository stockLogRepository;
+
     @InjectMocks
-    private ProductStockWriter productWriter;
+    private ProductStockWriter productStockWriter;
+
     private Products product1;
     private Products product2;
 
@@ -51,12 +58,14 @@ class ProductStockWriterTest {
 
         when(productRepository.findById(1L)).thenReturn(java.util.Optional.of(product1));
         when(productRepository.findById(2L)).thenReturn(java.util.Optional.of(product2));
+        when(stockLogRepository.save(any(StockLogs.class))).thenAnswer(stockLog -> stockLog.getArgument(0));
+
 
         Map.Entry<Long, List<StockLogs>> entry1 = new AbstractMap.SimpleEntry<>(1L, List.of(stockLog1, stockLog3));
         Map.Entry<Long, List<StockLogs>> entry2 = new AbstractMap.SimpleEntry<>(2L, List.of(stockLog2));
 
         //When
-        productWriter.write(Chunk.of(entry1, entry2));
+        productStockWriter.write(Chunk.of(entry1, entry2));
 
         //Then
         assertEquals(96, product1.getStockQuantity());

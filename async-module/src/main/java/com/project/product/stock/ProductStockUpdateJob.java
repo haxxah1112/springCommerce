@@ -28,11 +28,11 @@ public class ProductStockUpdateJob {
     private final PlatformTransactionManager transactionManager;
     private final ItemReader<Long> stockLogReader;
     private final ItemProcessor<Long, Map.Entry<Long, List<StockLogs>>> productStockProcessor;
-    private final ItemWriter<Map.Entry<Long, List<StockLogs>>> productWriter;
+    private final ItemWriter<Map.Entry<Long, List<StockLogs>>> productStockWriter;
 
     private final JobExecutionListener jobExecutionListener;
 
-    @Bean
+    @Bean(name = "productStockUpdateBatchJob")
     public Job productStockUpdateJob() {
         JobBuilder jobBuilder = new JobBuilder("productStockUpdateJob", jobRepository)
                 .listener(jobExecutionListener)
@@ -49,7 +49,8 @@ public class ProductStockUpdateJob {
                 .<Long, Map.Entry<Long, List<StockLogs>>>chunk(10)
                 .reader(stockLogReader)
                 .processor(productStockProcessor)
-                .writer(productWriter)
+                .writer(productStockWriter)
+                .transactionManager(transactionManager)
                 .build();
     }
 }
