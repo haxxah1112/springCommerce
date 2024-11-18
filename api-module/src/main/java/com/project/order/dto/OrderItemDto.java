@@ -1,15 +1,14 @@
 package com.project.order.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class OrderItemDto {
     private Long productId;
     private int quantity;
     private int price;
-    private boolean isSuccess;
 }

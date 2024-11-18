@@ -1,11 +1,12 @@
 package com.project.order.dto;
 
-import com.project.address.dto.AddressRequestDto;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 public class OrderRequestDto {

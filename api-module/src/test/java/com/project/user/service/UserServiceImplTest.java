@@ -6,6 +6,7 @@ import com.project.domain.users.Users;
 import com.project.dto.RefreshTokenDto;
 import com.project.security.JwtProvider;
 import com.project.security.JwtPayload;
+import com.project.security.RedisTokenStorage;
 import com.project.user.dto.UserLoginRequestDto;
 import com.project.user.dto.UserLoginResponseDto;
 import com.project.user.dto.UserRegisterRequestDto;
@@ -18,9 +19,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
@@ -34,6 +37,8 @@ class UserServiceImplTest {
     JwtProvider jwtProvider;
     @Mock
     PasswordEncoder passwordEncoder;
+    @Mock
+    RedisTokenStorage redisTokenStorage;
     @InjectMocks
     UserServiceImpl userService;
 
@@ -97,14 +102,34 @@ class UserServiceImplTest {
         //When
         when(userRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())).thenReturn(true);
-        when(jwtProvider.generateToken(any(JwtPayload.class))).thenReturn(accessToken);
+        when(jwtProvider.generateAccessToken(any(JwtPayload.class))).thenReturn(accessToken);
         when(jwtProvider.generateRefreshToken(any(JwtPayload.class))).thenReturn(refreshTokenDto);
 
         ApiResponse<UserLoginResponseDto> response = userService.loginUser(loginRequest);
 
         //Then
-        assertThat(response.getData().getToken()).isEqualTo(accessToken);
+        assertThat(response.getData().getAccessToken()).isEqualTo(accessToken);
         assertThat(response.getData().getUserEmail()).isEqualTo(user.getEmail());
         assertThat(response.getData().getUserName()).isEqualTo(user.getName());
+    }
+
+    @Test
+    public void refreshTokenTest() {
+        String refreshToken = "refreshToken";
+        String userId = "1";
+        String storedRefreshToken = "storedRefreshToken";
+        String newAccessToken = "newAccessToken";
+
+        when(jwtProvider.extractToken(refreshToken)).thenReturn(refreshToken);
+        when(jwtProvider.getUserIdByJwt(refreshToken)).thenReturn(userId);
+        when(redisTokenStorage.getRefreshToken(userId)).thenReturn(storedRefreshToken);
+        when(jwtProvider.verifyToken(storedRefreshToken)).thenReturn(true);
+        when(jwtProvider.generateAccessToken(any(JwtPayload.class))).thenReturn(newAccessToken);
+
+
+        ApiResponse<String> response = userService.refreshToken(refreshToken);
+
+        assertEquals("newAccessToken", response.getData());
+        verify(redisTokenStorage).getRefreshToken(userId);
     }
 }
