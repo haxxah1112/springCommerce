@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -32,6 +34,11 @@ public class Orders extends BaseEntity {
 
     private LocalDateTime deliveryCompletedAt;
 
+    @Builder.Default
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "orders_id")
+    private List<OrderItems> orderItems = new ArrayList<>();
+
     public void prepareForShipment() {
         this.status = OrderStatus.PREPARING_FOR_SHIPMENT;
     }
@@ -43,5 +50,18 @@ public class Orders extends BaseEntity {
     public void completed(int totalPrice) {
         this.totalPrice = totalPrice;
         this.status = OrderStatus.COMPLETED;
+    }
+
+    public void complete() {
+        int totalPrice = this.orderItems.stream()
+                .mapToInt(orderItem -> orderItem.getProduct().getPrice() * orderItem.getQuantity())
+                .sum();
+
+        this.totalPrice = totalPrice;
+        this.status = OrderStatus.COMPLETED;
+    }
+
+    public void addOrderItems(List<OrderItems> items) {
+        this.orderItems.addAll(items);
     }
 }

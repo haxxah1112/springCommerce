@@ -27,6 +27,7 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.ACKS_CONFIG, "all");
         configProps.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "5");
         configProps.put(ProducerConfig.RETRIES_CONFIG, "5");
+        configProps.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "tx-");
 
         return new DefaultKafkaProducerFactory<>(configProps);
     }
