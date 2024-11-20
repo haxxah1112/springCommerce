@@ -1,5 +1,6 @@
 # springCommerce
 의류 상품을 관리하고 주문할 수 있는 커머스 서비스
+</br></br>
 
 ## 개발환경
 - Backend: Spring Boot 3, JDK 17
@@ -8,10 +9,16 @@
 - Messaging: Apache Kafka
 - Cache: Redis
 - Containerization: Docker
+</br></br>
+
+## 서비스 아키텍처
+<img width="449" alt="image" src="https://github.com/user-attachments/assets/1659a822-c1bb-43e5-ad5c-5a25eed0f83c">
+</br></br>
 
 ## Database
 Table Diagram
 ![shop (5) 복사본](https://github.com/user-attachments/assets/1ea3f6cf-576b-4858-84cd-737e3e1d8307)
+</br></br>
 
 ## 주요 기능
 - 회원 관리
