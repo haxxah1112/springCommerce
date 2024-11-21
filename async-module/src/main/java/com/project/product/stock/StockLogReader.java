@@ -1,7 +1,7 @@
 package com.project.product.stock;
 
 import com.project.domain.products.StockLogs;
-import com.project.domain.products.repository.StockLogQueryRepositoryImpl;
+import com.project.domain.products.repository.StockLogQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class StockLogReader implements ItemReader<Long> {
-    private final StockLogQueryRepositoryImpl stockLogQueryRepository;
+    private final StockLogQueryRepository stockLogQueryRepository;
     private Iterator<StockLogs> stockLogIterator = Collections.emptyIterator();
 
     @Override
