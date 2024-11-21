@@ -1,9 +1,13 @@
 package com.project.domain.products.repository;
 
-import com.project.common.dto.SearchDto;
+import com.project.common.dto.ProductSearchDto;
 import com.project.domain.products.Products;
-import org.springframework.data.domain.Page;
+import com.project.domain.products.cursor.ProductCursorResponseDto;
+import org.springframework.data.domain.Slice;
+
+import java.util.List;
 
 public interface ProductQueryRepository {
-    Page<Products> findAllWithFilters(SearchDto criteria);
+    Slice<ProductCursorResponseDto> findAllWithFilters(ProductSearchDto searchDto);
+
 }

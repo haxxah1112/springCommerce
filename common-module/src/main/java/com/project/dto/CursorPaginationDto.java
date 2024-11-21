@@ -1,6 +1,6 @@
 package com.project.dto;
 
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,11 +12,13 @@ import org.springframework.data.domain.Pageable;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PaginationDto {
-    private int page = 0;
+@AllArgsConstructor
+public class CursorPaginationDto {
+    private String cursor;
+    private Long longCursor;
     private int size = 10;
 
     public Pageable toPageable() {
-        return PageRequest.of(page, size);
+        return PageRequest.of(0, size);
     }
 }

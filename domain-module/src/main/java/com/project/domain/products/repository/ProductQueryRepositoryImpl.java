@@ -1,17 +1,20 @@
 package com.project.domain.products.repository;
 
-import com.project.common.dto.SearchDto;
+import com.project.common.dto.ProductSearchDto;
 import com.project.common.enums.Condition;
 import com.project.domain.products.Categories;
-import com.project.domain.products.Products;
 import com.project.domain.products.QProducts;
+import com.project.domain.products.cursor.ProductCursorResponseDto;
+import com.project.domain.products.cursor.ProductCursorStrategyResolver;
+import com.project.domain.products.cursor.strategy.CursorStrategy;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,57 +23,57 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     private final JPAQueryFactory queryFactory;
-    private final QProducts product = QProducts.products;
+    private final ProductCursorStrategyResolver cursorStrategyFactory;
+
 
     @Override
-    public Page<Products> findAllWithFilters(SearchDto searchDto) {
-        BooleanBuilder filterBuilder = createFilterBuilder(searchDto, product);
-        OrderSpecifier<?> orderSpecifier = createOrderSpecifier(searchDto.getCondition(), product);
+    public Slice<ProductCursorResponseDto> findAllWithFilters(ProductSearchDto searchDto) {
+        QProducts products = QProducts.products;
 
-        List<Products> products = queryFactory
-                .selectFrom(product)
-                .where(filterBuilder)
-                .orderBy(orderSpecifier)
-                .offset(searchDto.getPage() * searchDto.getSize())
-                .limit(searchDto.getSize())
+        String cursorValue = searchDto.getCursor();
+        CursorStrategy cursorStrategy = cursorStrategyFactory.resolveStrategy(searchDto.getCondition());
+        StringTemplate customCursor = cursorStrategy.generateCursor(products);
+        BooleanExpression cursorCondition = cursorValue != null ? customCursor.lt(cursorValue) : null;
+
+        BooleanBuilder filterBuilder = createFilterBuilder(searchDto, products);
+        List<OrderSpecifier<?>> sortOrders = getSortOrders(products, searchDto.getCondition());
+
+        List<ProductCursorResponseDto> productList = queryFactory
+                .select(Projections.constructor(ProductCursorResponseDto.class,
+                        products.id,
+                        products.brand.name,
+                        products.name,
+                        products.category,
+                        products.price,
+                        products.stockQuantity,
+                        products.discountRate,
+                        products.salesCount,
+                        customCursor.as("customCursor")
+                ))
+                .from(products)
+                .where(
+                        filterBuilder,
+                        cursorCondition
+                )
+                .orderBy(sortOrders.toArray(new OrderSpecifier<?>[0]))
+                .limit(searchDto.getSize() + 1)
                 .fetch();
 
-        long total = queryFactory
-                .selectFrom(product)
-                .where(filterBuilder)
-                .fetchCount();
+        boolean hasNext = productList.size() > searchDto.getSize();
+        if (hasNext) {
+            productList.remove(productList.size() - 1);
+        }
 
-        return new PageImpl<>(products, PageRequest.of(searchDto.getPage(), searchDto.getSize()), total);
+        return new SliceImpl<>(productList, Pageable.ofSize(searchDto.getSize()), hasNext);
     }
 
-    private BooleanBuilder createFilterBuilder(SearchDto searchDto, QProducts product) {
+    private BooleanBuilder createFilterBuilder(ProductSearchDto productSearchDto, QProducts product) {
         BooleanBuilder filterBuilder = new BooleanBuilder();
 
-        addCategoryFilter(searchDto.getCategory(), product, filterBuilder);
-        addKeywordFilter(searchDto.getSearchKeyword(), product, filterBuilder);
+        addCategoryFilter(productSearchDto.getCategory(), product, filterBuilder);
+        addKeywordFilter(productSearchDto.getSearchKeyword(), product, filterBuilder);
 
         return filterBuilder;
-    }
-
-    private OrderSpecifier<?> createOrderSpecifier(Condition condition, QProducts product) {
-        if (condition == null) {
-            return product.id.desc();
-        }
-
-        switch (condition) {
-            case NEW:
-                return product.createdAt.desc();
-            case BEST:
-                return product.salesCount.desc();
-            case DISCOUNT:
-                return product.discountRate.desc();
-            case PRICE_HIGH:
-                return product.price.desc();
-            case PRICE_LOW:
-                return product.price.asc();
-            default:
-                return product.id.desc();
-        }
     }
 
     private void addCategoryFilter(Categories category, QProducts product, BooleanBuilder filterBuilder) {
@@ -85,4 +88,14 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
                     .or(product.brand.name.containsIgnoreCase(keyword)));
         }
     }
+
+    private List<OrderSpecifier<?>> getSortOrders(QProducts products, Condition sortCondition) {
+        if (sortCondition == null) {
+            return List.of(products.id.desc());
+        }
+
+        CursorStrategy strategy = cursorStrategyFactory.resolveStrategy(sortCondition);
+        return strategy.getSortOrders(products);
+    }
+
 }
