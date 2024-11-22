@@ -17,6 +17,7 @@ dependencies {
     implementation project(path: ':domain-module')
     implementation project(path: ':infra-module:redis')
     implementation project(path: ':infra-module:kafka')
+    implementation project(path: ':infra-module:notification')
     implementation project(path: ':common-module')
     testImplementation(testFixtures(project(":domain-module")))
 
@@ -40,6 +41,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.redisson:redisson-spring-boot-starter:3.27.0'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 
 
@@ -51,6 +53,7 @@ dependencies {
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.testcontainers:kafka:1.17.3'
     testImplementation 'org.testcontainers:junit-jupiter:1.17.3'
+    testImplementation 'io.projectreactor:reactor-test'
 }
 
 test {

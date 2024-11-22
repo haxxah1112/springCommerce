@@ -1,6 +1,6 @@
 package com.project.listener;
 
-import com.project.notification.dto.NotificationRequest;
+import com.project.common.message.NotificationMessage;
 import com.project.notification.strategy.NotificationStrategy;
 import com.project.notification.strategy.NotificationStrategyResolver;
 import com.project.util.JsonUtil;
@@ -15,7 +15,7 @@ public class NotificationConsumer {
 
     @KafkaListener(topics = "notification-requests", groupId = "notification-group")
     public void requestNotification(String message) {
-        NotificationRequest request = JsonUtil.deserialize(message, NotificationRequest.class);
+        NotificationMessage request = JsonUtil.deserialize(message, NotificationMessage.class);
 
         NotificationStrategy notificationStrategy = notificationStrategyResolver.resolveStrategy(request.getTemplate());
         notificationStrategy.handle(request);
