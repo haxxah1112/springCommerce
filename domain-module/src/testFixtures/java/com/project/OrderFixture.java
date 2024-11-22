@@ -16,9 +16,8 @@ public class OrderFixture {
         return order;
     }
 
-    public static OrderItems createOrderItem(Orders order, Products product, int quantity) {
+    public static OrderItems createOrderItem(Products product, int quantity) {
         return OrderItems.builder()
-                .order(order)
                 .product(product)
                 .price(product.getPrice())
                 .quantity(quantity)

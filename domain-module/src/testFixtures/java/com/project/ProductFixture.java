@@ -17,6 +17,20 @@ public class ProductFixture {
                 .build();
     }
 
+    public static Products createDefaultProduct(Long productId) {
+        Brands brand = BrandFixture.createBrand("testBrand", UserFixture.createDefaultUser());
+
+        return Products.builder()
+                .id(productId)
+                .brand(brand)
+                .name("testProduct")
+                .category(Categories.TOP)
+                .price(20000)
+                .stockQuantity(500)
+                .discountRate(0)
+                .build();
+    }
+
     public static ProductCursorResponseDto createProductCursorResponseDto(Products product, String customCursor) {
         return ProductCursorResponseDto.builder()
                 .productId(product.getId())
