@@ -47,21 +47,19 @@ public class Orders extends BaseEntity {
         this.status = OrderStatus.CONFIRM;
     }
 
-    public void completed(int totalPrice) {
-        this.totalPrice = totalPrice;
-        this.status = OrderStatus.COMPLETED;
-    }
-
     public void complete() {
-        int totalPrice = this.orderItems.stream()
-                .mapToInt(orderItem -> orderItem.getProduct().getPrice() * orderItem.getQuantity())
-                .sum();
-
-        this.totalPrice = totalPrice;
+        this.totalPrice = calculateTotalPrice();
         this.status = OrderStatus.COMPLETED;
+        this.orderItems.forEach(OrderItems::complete);
     }
 
     public void addOrderItems(List<OrderItems> items) {
         this.orderItems.addAll(items);
+    }
+
+    private int calculateTotalPrice() {
+        return this.orderItems.stream()
+                .mapToInt(OrderItems::getTotalPrice)
+                .sum();
     }
 }

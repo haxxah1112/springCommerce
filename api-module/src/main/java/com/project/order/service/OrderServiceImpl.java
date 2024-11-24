@@ -3,6 +3,7 @@ package com.project.order.service;
 import com.project.common.dto.ApiResponse;
 import com.project.common.kafka.producer.StockProducer;
 import com.project.common.message.DecrementProductStockMessage;
+import com.project.domain.order.OrderItemStatus;
 import com.project.domain.order.OrderItems;
 import com.project.domain.order.Orders;
 import com.project.domain.order.repository.OrderRepository;

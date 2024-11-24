@@ -22,4 +22,15 @@ public class OrderItems {
 
     private int quantity;
     private int price;
+
+    @Enumerated(EnumType.STRING)
+    private OrderItemStatus status;
+
+    public int getTotalPrice() {
+        return this.price;
+    }
+
+    public void complete() {
+        this.status = OrderItemStatus.COMPLETED;
+    }
 }
