@@ -26,7 +26,7 @@ public class Reviews extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orderId")
-    private Orders order;  // 주문과의 연관관계 추가
+    private Orders order;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productId")

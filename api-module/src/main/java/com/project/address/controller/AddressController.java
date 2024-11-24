@@ -2,7 +2,7 @@ package com.project.address.controller;
 
 import com.project.address.dto.AddressRequestDto;
 import com.project.address.service.AddressService;
-import com.project.common.ApiResponse;
+import com.project.common.dto.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

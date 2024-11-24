@@ -1,6 +1,7 @@
 package com.project.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
+@Getter
 @MappedSuperclass
 @SuperBuilder
 @NoArgsConstructor
@@ -23,10 +25,10 @@ public abstract class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createDate;
+    private LocalDateTime createdAt;
 
     private Long updatedId;
 
     @LastModifiedDate
-    private LocalDateTime updateDate;
+    private LocalDateTime updatedAt;
 }

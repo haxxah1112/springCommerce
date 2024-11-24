@@ -22,7 +22,7 @@ public class Users extends BaseEntity {
     @GeneratedValue
     private Long id;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "userId")
     private List<Addresses> addresses = new ArrayList<>();
 
@@ -32,10 +32,14 @@ public class Users extends BaseEntity {
 
     private String password;
 
+    private String phone;
+
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
     private int point;
+
+    private boolean isNotificationActive;
 
     public void addPoint(int pointsToAdd) {
         this.point = this.point + pointsToAdd;

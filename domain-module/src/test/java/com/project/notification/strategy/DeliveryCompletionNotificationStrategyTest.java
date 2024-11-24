@@ -58,7 +58,7 @@ class DeliveryCompletionNotificationStrategyTest {
         Orders order = OrderFixture.createOrder(user, OrderStatus.COMPLETED);
         Brands brand = BrandFixture.createBrand("brandTest", user);
         Products product = ProductFixture.createProduct("itemName", brand, 2000, Categories.TOP, 100);
-        OrderItems orderItem = OrderFixture.createOrderItem(order, product, 1);
+        OrderItems orderItem = OrderFixture.createOrderItem(product, 1);
 
         when(orderItemRepository.findById(orderItemId)).thenReturn(Optional.of(orderItem));
         NotificationStrategy strategy = notificationStrategyResolver.resolveStrategy("DELIVERY_COMPLETION_TEMPLATE");

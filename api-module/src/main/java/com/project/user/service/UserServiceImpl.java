@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
         }
 
         JwtPayload jwtPayload = new JwtPayload(String.valueOf(findUser.getId()), new Date());
-        String accessToken = jwtProvider.generateToken(jwtPayload);
+        String accessToken = jwtProvider.generateAccessToken(jwtPayload);
 
         RefreshTokenDto refreshToken = jwtProvider.generateRefreshToken(jwtPayload);
         redisTokenStorage.saveRefreshToken(jwtPayload, refreshToken);
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
         }
 
         JwtPayload jwtPayload = new JwtPayload(userId, new Date());
-        String newAccessToken = jwtProvider.generateToken(jwtPayload);
+        String newAccessToken = jwtProvider.generateAccessToken(jwtPayload);
 
         return ApiResponse.success(newAccessToken);
     }

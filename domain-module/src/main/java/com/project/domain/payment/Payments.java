@@ -3,8 +3,11 @@ package com.project.domain.payment;
 import com.project.domain.BaseEntity;
 import com.project.domain.order.Orders;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 @Entity
 public class Payments extends BaseEntity {

@@ -5,12 +5,15 @@ import com.project.address.dto.AddressResponseDto;
 import com.project.common.dto.ApiResponse;
 import com.project.domain.address.Addresses;
 import com.project.domain.address.repository.AddressRepository;
-import com.project.exception.AddressException;
+import com.project.exception.NotFoundException;
+import com.project.exception.error.CustomError;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
 
@@ -24,8 +27,9 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ApiResponse getAddress(Long id) {
-        Addresses address = addressRepository.findById(id).orElseThrow(() -> new AddressException("Address not found with id: " + id));
+        Addresses address = addressRepository.findById(id).orElseThrow(() -> new NotFoundException(CustomError.NOT_FOUND));
 
         return ApiResponse.success(addressConverter.convertAddressEntityToResponse(address));
     }
@@ -33,7 +37,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public ApiResponse updateAddress(AddressRequestDto request) {
         Addresses address = addressRepository.findById(request.getAddressId())
-                .orElseThrow(() -> new AddressException("Address not found with id " + request.getAddressId()));
+                .orElseThrow(() -> new NotFoundException(CustomError.NOT_FOUND));
 
         Addresses updateAddress = addressConverter.updateAddressFromRequest(address, request);
 
@@ -45,7 +49,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public void deleteAddress(Long id) {
         if (!addressRepository.existsById(id)) {
-            throw new AddressException("Address not found with id: " + id);
+            throw new NotFoundException(CustomError.NOT_FOUND);
         }
         addressRepository.deleteById(id);
     }

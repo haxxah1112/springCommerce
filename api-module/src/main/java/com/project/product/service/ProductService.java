@@ -1,13 +1,13 @@
 package com.project.product.service;
 
 import com.project.common.dto.ApiResponse;
-import com.project.common.dto.SearchDto;
+import com.project.common.dto.ProductSearchDto;
+import com.project.domain.products.cursor.ProductCursorResponseDto;
 import com.project.product.dto.ProductResponseDto;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Slice;
 
 public interface ProductService {
-    Page<ProductResponseDto> getProductsByCategory(SearchDto searchDto);
+    Slice<ProductCursorResponseDto> getProductsByCategory(ProductSearchDto searchDto);
 
     ApiResponse<ProductResponseDto> getProductDetail(Long productId);
 }

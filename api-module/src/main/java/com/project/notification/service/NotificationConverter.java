@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 public class NotificationConverter {
     public Notifications convertRequestToEntity(Users user, NotificationSendRequestDto request) {
         return Notifications.builder()
-                .user(user)
+                .userId(user.getId())
                 .message(request.getMessage())
-                .isRead(false)
+                .isSuccess(true)
                 .build();
     }
 }
