@@ -35,7 +35,7 @@ public class Orders extends BaseEntity {
     private LocalDateTime deliveryCompletedAt;
 
     @Builder.Default
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "orders_id")
     private List<OrderItems> orderItems = new ArrayList<>();
 
@@ -62,4 +62,5 @@ public class Orders extends BaseEntity {
                 .mapToInt(OrderItems::getTotalPrice)
                 .sum();
     }
+
 }

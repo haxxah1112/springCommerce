@@ -32,5 +32,6 @@ public class OrderItems {
 
     public void complete() {
         this.status = OrderItemStatus.COMPLETED;
+        this.product.increaseSalesCount(quantity);
     }
 }

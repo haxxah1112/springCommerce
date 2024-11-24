@@ -1,24 +1,20 @@
 package com.project.order.service;
 
 import com.project.common.dto.ApiResponse;
-import com.project.common.kafka.producer.StockProducer;
-import com.project.common.message.DecrementProductStockMessage;
-import com.project.domain.order.OrderItemStatus;
+import com.project.common.dto.StockDecrementResult;
 import com.project.domain.order.OrderItems;
 import com.project.domain.order.Orders;
 import com.project.domain.order.repository.OrderRepository;
 import com.project.domain.products.Products;
-import com.project.domain.products.StockLogs;
 import com.project.domain.products.repository.ProductRepository;
 import com.project.domain.users.Users;
 import com.project.event.AddPointEvent;
+import com.project.event.stock.StockLogEvent;
 import com.project.exception.NotFoundException;
 import com.project.exception.error.CustomError;
-import com.project.handler.StockLogHandler;
 import com.project.order.dto.OrderItemDto;
 import com.project.order.dto.OrderRequestDto;
 import com.project.order.dto.OrderResponseDto;
-import com.project.product.dto.StockDecrementResult;
 import com.project.product.service.ProductCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -33,11 +29,10 @@ public class OrderServiceImpl implements OrderService {
     private final OrderConverter orderConverter;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final StockProducer stockProducer;
     private final ApplicationEventPublisher eventPublisher;
     private final ProductCacheService productCacheService;
     private final OrderValidator orderValidator;
-    private final StockLogHandler stockLogHandler;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
@@ -55,15 +50,8 @@ public class OrderServiceImpl implements OrderService {
             order.complete();
             orderRepository.save(order);
 
-            List<StockLogs> stockLogs = stockLogHandler.saveStockLogs(stockDecrementResults, order);
-            List<DecrementProductStockMessage> events = stockLogs.stream()
-                    .map(log -> new DecrementProductStockMessage(
-                            log.getProductId(),
-                            log.getQuantity(),
-                            log.getId()
-                    ))
-                    .toList();
-            stockProducer.sendProductDecrementEvents(events);
+            StockLogEvent stockLogEvent = new StockLogEvent(stockDecrementResults, order.getId());
+            applicationEventPublisher.publishEvent(stockLogEvent);
 
             OrderResponseDto responseDto = orderConverter.convertOrderEntityToOrderResponseDto(order);
             return ApiResponse.success(responseDto);

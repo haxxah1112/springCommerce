@@ -27,11 +27,13 @@ public class OrderValidator {
     }
 
     public void validateProducts(List<OrderItemDto> items) {
-        for (OrderItemDto itemDto : items) {
-            Products product = productRepository.findById(itemDto.getProductId())
-                    .orElseThrow(() -> new NotFoundException(CustomError.NOT_FOUND));
-            String cachedProduct = productCacheService.getCachedProduct(product.getId());
+        for (OrderItemDto item : items) {
+            String cachedProduct = productCacheService.getCachedProduct(item.getProductId());
+
             if (!StringUtils.hasText(cachedProduct)) {
+                Products product = productRepository.findById(item.getProductId())
+                        .orElseThrow(() -> new NotFoundException(CustomError.NOT_FOUND));
+
                 productCacheService.cacheProduct(product);
             }
         }

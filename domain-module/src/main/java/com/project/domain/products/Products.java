@@ -4,8 +4,9 @@ import com.project.domain.BaseEntity;
 import com.project.domain.brands.Brands;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -44,5 +45,9 @@ public class Products extends BaseEntity {
 
     public void increaseViewCount() {
         this.viewCount += 1;
+    }
+
+    public void increaseSalesCount(int quantity) {
+        this.salesCount += quantity;
     }
 }
